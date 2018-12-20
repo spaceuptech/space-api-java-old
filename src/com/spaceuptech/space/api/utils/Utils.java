@@ -19,7 +19,7 @@ public class Utils {
     }
 
     public interface ResponseListener {
-        public void onResponse(int statusCode, ResponseStub data);
+        public void onResponse(int statusCode, Object data);
         public void onError(Exception e);
     }
 
@@ -61,8 +61,8 @@ public class Utils {
             try {
                 Response response = req.get();
                 String b = response.getResponseBody();
-                ResponseStub obj = null;
-                if (b.length() > 0) obj = new GsonBuilder().create().fromJson(b, ResponseStub.class);
+                Object obj = null;
+                if (b.length() > 0) obj = new GsonBuilder().create().fromJson(b, Object.class);
                 listener.onResponse(response.getStatusCode(), obj);
             } catch (Exception e) {
                 listener.onError(e);
