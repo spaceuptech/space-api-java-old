@@ -14,10 +14,6 @@ import java.util.concurrent.Executors;
 
 public class Utils {
 
-    public class ResponseStub {
-        public Object result;
-    }
-
     public interface ResponseListener {
         public void onResponse(int statusCode, Object data);
         public void onError(Exception e);
