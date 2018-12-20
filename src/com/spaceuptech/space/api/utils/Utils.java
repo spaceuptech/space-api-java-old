@@ -50,6 +50,12 @@ public class Utils {
                 .execute();
     }
 
+    public static HashMap<String, Object> createMap(String k, Object v) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(k, v);
+        return map;
+    }
+
     public static void fetch(AsyncHttpClient client, String method, String token, String url, String body, Utils.ResponseListener listener) {
         ListenableFuture<Response> req = getFuture(client, method, token, url, body);
 

@@ -6,6 +6,8 @@ import com.spaceuptech.space.api.utils.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.spaceuptech.space.api.utils.Utils.createMap;
+
 public class Mongo {
     private Config config;
 
@@ -77,7 +79,7 @@ public class Mongo {
         return temp;
     }
     
-    protected static HashMap<String, Object> generateFind(Condition condition) {
+    public static HashMap<String, Object> generateFind(Condition condition) {
         switch (condition.condType) {
             case AND: {
                 And and = (And) condition;
@@ -139,11 +141,4 @@ public class Mongo {
             }
         }
     }
-
-    private static HashMap<String, Object> createMap(String k, Object v) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put(k, v);
-        return map;
-    }
-
 }
