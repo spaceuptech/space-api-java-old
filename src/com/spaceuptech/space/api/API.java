@@ -1,6 +1,8 @@
 package com.spaceuptech.space.api;
 
+import com.google.gson.Gson;
 import com.spaceuptech.space.api.mongo.Mongo;
+import com.spaceuptech.space.api.sql.SQL;
 import com.spaceuptech.space.api.utils.Config;
 import com.spaceuptech.space.api.utils.Utils;
 import org.asynchttpclient.AsyncHttpClient;
@@ -25,5 +27,19 @@ public class API {
 
     public Mongo Mongo() {
         return new Mongo(config);
+    }
+
+    public SQL MySQL() {
+        return new SQL("mysql", this.config);
+    }
+
+    public SQL Postgres() {
+        return new SQL("postgres", this.config);
+    }
+
+    public void call(String engineName, String funcName, Object params, Utils.ResponseListener listener) {
+        Utils.fetch(this.config.client, "post", this.config.token,
+                this.config.url + "v1/functions/" + engineName + "/" + funcName,
+                new Gson().toJson(params), listener);
     }
 }
