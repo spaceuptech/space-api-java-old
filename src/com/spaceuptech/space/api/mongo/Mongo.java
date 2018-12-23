@@ -72,13 +72,13 @@ public class Mongo {
     }
 
     public static String mongoURL(String url, String projectId, String collection, String params) {
-        String temp = url + "v1/mongo/" + projectId + "/" + collection + "?" + params;
+        String temp = url + "v1/mongo/" + projectId + "/" + collection;
         if (params.length() > 0) {
             temp += "?" + params;
         }
         return temp;
     }
-    
+
     public static HashMap<String, Object> generateFind(Condition condition) {
         switch (condition.condType) {
             case AND: {

@@ -1,15 +1,12 @@
 package com.spaceuptech.space.api.utils;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.BoundRequestBuilder;
 import org.asynchttpclient.ListenableFuture;
 import org.asynchttpclient.Response;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class Utils {

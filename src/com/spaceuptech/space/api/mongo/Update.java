@@ -12,7 +12,7 @@ public class Update {
 
     private class Params {
         String op;
-        HashMap<String, Object> find, $set;
+        HashMap<String, Object> find, update;
 
     }
 
@@ -24,6 +24,7 @@ public class Update {
         this.config = config;
         this.collection = collection;
         this.params = new Params();
+        this.params.update = new HashMap<>();
     }
 
     public Update where(Condition... conds) {
@@ -33,7 +34,68 @@ public class Update {
     }
 
     public Update set(HashMap<String, Object> obj) {
-        this.params.$set = obj;
+        this.params.update.put("$set", obj);
+        return this;
+    }
+
+    public Update push(HashMap<String, Object> obj) {
+        this.params.update.put("$push", obj);
+        return this;
+    }
+
+    public Update remove(String... fields) {
+        HashMap map = new HashMap<String, String>();
+        for (String field : fields) {
+            map.put(field, "");
+        }
+        this.params.update.put("$unset", map);
+        return this;
+    }
+
+    public Update rename(HashMap<String, Object> obj) {
+        this.params.update.put("$rename", obj);
+        return this;
+    }
+
+    public Update inc(HashMap<String, Object> obj) {
+        this.params.update.put("$inc", obj);
+        return this;
+    }
+
+    public Update max(HashMap<String, Object> obj) {
+        this.params.update.put("$max", obj);
+        return this;
+    }
+
+    public Update min(HashMap<String, Object> obj) {
+        this.params.update.put("$min", obj);
+        return this;
+    }
+
+    public Update mul(HashMap<String, Object> obj) {
+        this.params.update.put("$mul", obj);
+        return this;
+    }
+
+    public Update currentTimestamp(String... fields) {
+        HashMap map = this.params.update.containsKey("$currentDate") ? (HashMap) this.params.update.get("$currentDate") : new HashMap<String, Object>();
+        for (String field : fields) {
+            HashMap temp = new HashMap<String, String>();
+            temp.put("$type", "timestamp");
+            map.put(field, temp);
+        }
+        this.params.update.put("$currentDate", map);
+        return this;
+    }
+
+    public Update currentDate(String... fields) {
+        HashMap map = this.params.update.containsKey("$currentDate") ? (HashMap) this.params.update.get("$currentDate") : new HashMap<String, Object>();
+        for (String field : fields) {
+            HashMap temp = new HashMap<String, String>();
+            temp.put("$type", "date");
+            map.put(field, temp);
+        }
+        this.params.update.put("$currentDate", map);
         return this;
     }
 

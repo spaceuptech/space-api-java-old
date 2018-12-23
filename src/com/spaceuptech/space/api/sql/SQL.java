@@ -78,7 +78,7 @@ public class SQL {
 
 
     public static String sqlURL(String url, String db, String projectId, String table, String params) {
-        String temp = url + "v1/sql/" + db + "/" + projectId + "/" + table + "?" + params;
+        String temp = url + "v1/sql/" + db + "/" + projectId + "/" + table;
         if (params.length() > 0) {
             temp += "?" + params;
         }
