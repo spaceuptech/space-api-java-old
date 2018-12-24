@@ -1,6 +1,7 @@
 package com.spaceuptech.space.api.sql;
 
 import com.google.gson.Gson;
+import com.spaceuptech.space.api.utils.AuthResponse;
 import com.spaceuptech.space.api.utils.Config;
 import com.spaceuptech.space.api.utils.Utils;
 
@@ -54,17 +55,29 @@ public class SQL {
                 this.config.url + "v1/auth/" + this.db + "/profiles", "", listener);
     }
 
-    public void signIn(String email, String pass, Utils.ResponseListener listener) {
+    public void signIn(String email, String pass, Utils.SQLAuthListener listener) {
         HashMap<String, String> map = new HashMap<>();
         map.put("email", email);
         map.put("pass", pass);
         map.put("db", this.db);
 
+        Utils.ResponseListener listener1 = new Utils.ResponseListener() {
+            @Override
+            public void onResponse(int statusCode, Object data) {
+                listener.onResponse(statusCode, (AuthResponse) data);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                listener.onError(e);
+            }
+        };
+
         Utils.fetch(this.config.client, "post", this.config.token, this.config.url + "v1/auth/email/signin",
-                new Gson().toJson(map), listener);
+                new Gson().toJson(map), listener1);
     }
 
-    public void signUp(String email, String name, String pass, String role, Utils.ResponseListener listener) {
+    public void signUp(String email, String name, String pass, String role, Utils.SQLAuthListener listener) {
         HashMap<String, String> map = new HashMap<>();
         map.put("email", email);
         map.put("name", name);
@@ -72,8 +85,21 @@ public class SQL {
         map.put("role", role);
         map.put("db", this.db);
 
+        Utils.ResponseListener listener1 = new Utils.ResponseListener() {
+            @Override
+            public void onResponse(int statusCode, Object data) {
+                AuthResponse res = AuthResponse.class.cast(data);
+                listener.onResponse(statusCode, res);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                listener.onError(e);
+            }
+        };
+
         Utils.fetch(this.config.client, "post", this.config.token, this.config.url + "v1/auth/email/signup",
-                new Gson().toJson(map), listener);
+                new Gson().toJson(map), listener1);
     }
 
 

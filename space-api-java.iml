@@ -30,5 +30,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="org.asynchttpclient:async-http-client:2.0.0-alpha23" level="project" />
   </component>
 </module>

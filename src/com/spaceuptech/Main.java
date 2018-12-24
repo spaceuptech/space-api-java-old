@@ -2,24 +2,13 @@ package com.spaceuptech;
 
 import com.spaceuptech.space.api.API;
 import com.spaceuptech.space.api.mongo.Mongo;
+import com.spaceuptech.space.api.sql.SQL;
 import com.spaceuptech.space.api.utils.*;
 
 import java.util.HashMap;
 
 
 public class Main {
-
-    public static void setTimeout(Runnable runnable, int delay){
-        new Thread(() -> {
-            try {
-                Thread.sleep(delay);
-                runnable.run();
-            }
-            catch (Exception e){
-                System.err.println(e);
-            }
-        }).start();
-    }
 
     private static Utils.ResponseListener generateListner(String event) {
         Utils.ResponseListener listener = new Utils.ResponseListener() {
@@ -38,21 +27,21 @@ public class Main {
 
 
     public static void main(String[] args) {
-        API api = new API("test", "http://localhost:8080");
-        Mongo mongo = api.Mongo();
+        API api = new API("realtime-mysql", "http://localhost:8080");
+        SQL mySQL = api.MySQL();
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsImlkIjoiYTNjMTdkODMtMDVjMC0xMWU5LWJiYTgtMmM2MDBjYzZlNTUyIiwicm9sZSI6InVzZXIifQ.XrzX0s3kWPSTJq39BaLjNQajeOzmnozpzupwaesYAY0";
-//        Utils.ResponseListener signUpListener = new Utils.ResponseListener() {
-//            @Override
-//            public void onResponse(int statusCode, Object data) {
-//                System.out.println("SignUp StatusCode: " + statusCode + " Data: " + data.toString());
-//            }
-//
-//            @Override
-//            public void onError(Exception e) {
-//                System.out.println("SignUp  Error: " + e.toString());
-//            }
-//        };
-//        mongo.signUp("user1@gmail.com", "User 1", "123", "user", signUpListener);
+        Utils.SQLAuthListener signUpListener = new Utils.SQLAuthListener() {
+            @Override
+            public void onResponse(int statusCode, AuthResponse res) {
+                System.out.println("SignUp Response: " + res.toString());
+            }
+
+            @Override
+            public void onError(Exception e) {
+                System.out.println("Error: " + e.toString());
+            }
+        };
+        mySQL.signUp("user1@gmail.com", "User 1", "123", "user", signUpListener);
 
 //        Utils.ResponseListener signInListener = new Utils.ResponseListener() {
 //            @Override
@@ -67,7 +56,7 @@ public class Main {
 //        };
 //        mongo.signIn("user1@gmail.com","123", generateListner("Signin"));
 
-        api.setToken(token);
+//        api.setToken(token);
 
 
 //        Utils.ResponseListener insertOneListener = new Utils.ResponseListener() {
@@ -122,7 +111,7 @@ public class Main {
 //        mongo.profiles(generateListner("Profile"));
 //        mongo.editProfile("a3c17d83-05c0-11e9-bba8-2c600cc6e552", "user1@gmail.com", "Jayesh", "123", generateListner("Edit Profile"));
 
-        api.call("my-engine", "my-func", 5000, "Faas is awesome!", generateListner("FaaS"));
+//        api.call("my-engine", "my-func", 5000, "Faas is awesome!", generateListner("FaaS"));
 
     }
 }

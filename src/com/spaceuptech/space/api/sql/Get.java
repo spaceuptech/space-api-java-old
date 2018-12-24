@@ -13,7 +13,8 @@ public class Get {
     private class Params {
         HashMap<String, Object> find;
         int offset, limit;
-        HashMap<String, Integer> sort, select;
+        String[] order;
+        HashMap<String, Integer> select;
         String op;
     }
 
@@ -40,12 +41,8 @@ public class Get {
         return this;
     }
 
-    public Get sort(String... sort) {
-        HashMap map = new HashMap<String, Integer>();
-        for (String s : sort) {
-            map.put(s, s.startsWith("-") ? -1: 1);
-        }
-        this.params.sort = map;
+    public Get order(String... order) {
+        this.params.order = order;
         return this;
     }
 
@@ -78,7 +75,7 @@ public class Get {
         String params = "op=" + this.params.op;
         params += "&find=" + gson.toJson(this.params.find);
         if (this.params.select != null && this.params.select.keySet().size() > 0) params += "&select=" + gson.toJson(this.params.select);
-        if (this.params.sort != null && this.params.sort.keySet().size() > 0) params += "&sort=" + gson.toJson(this.params.sort);
+        if (this.params.order != null && this.params.order.length > 0) params += "&order=" + gson.toJson(this.params.order);
         if (this.params.limit > 0) params += "&limit=" + this.params.limit;
         if (this.params.offset > 0) params += "&skip=" + this.params.offset;
         return SQL.sqlURL(this.config.url, this.db, this.config.projectId, this.table, params);

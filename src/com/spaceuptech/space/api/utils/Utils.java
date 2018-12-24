@@ -16,6 +16,16 @@ public class Utils {
         public void onError(Exception e);
     }
 
+    public interface SQLAuthListener {
+        public void onResponse(int statusCode, AuthResponse res);
+        public void onError(Exception e);
+    }
+
+    public interface MongoAuthListener {
+        public void onResponse(int statusCode, AuthResponse res);
+        public void onError(Exception e);
+    }
+
     private static ListenableFuture<Response> getFuture(AsyncHttpClient client, String method, String token, String url, String body) {
         BoundRequestBuilder builder;
 

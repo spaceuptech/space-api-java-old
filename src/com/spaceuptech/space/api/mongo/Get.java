@@ -14,7 +14,8 @@ public class Get {
     private class Params {
         HashMap<String, Object> find;
         int skip, limit;
-        HashMap<String, Integer> select, sort;
+        String[] sort;
+        HashMap<String, Integer> select;
         String op, distinct;
     }
 
@@ -41,11 +42,7 @@ public class Get {
     }
 
     public Get sort(String... sort) {
-        HashMap map = new HashMap<String, Integer>();
-        for (String s : sort) {
-            map.put(s, s.startsWith("-") ? -1: 1);
-        }
-        this.params.sort = map;
+        this.params.sort = sort;
         return this;
     }
 
@@ -90,7 +87,7 @@ public class Get {
         if (this.params.op == "distinct") params += "&distinct=" + this.params.distinct;
         params += "&find=" + gson.toJson(this.params.find);
         if (this.params.select != null && this.params.select.keySet().size() > 0) params += "&select=" + gson.toJson(this.params.select);
-        if (this.params.sort != null && this.params.sort.keySet().size() > 0) params += "&sort=" + gson.toJson(this.params.sort);
+        if (this.params.sort != null && this.params.sort.length > 0) params += "&sort=" + gson.toJson(this.params.sort);
         if (this.params.limit > 0) params += "&limit=" + this.params.limit;
         if (this.params.skip > 0) params += "&skip=" + this.params.skip;
         return Mongo.mongoURL(this.config.url, this.config.projectId, this.collection, params);
