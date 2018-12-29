@@ -32,7 +32,7 @@ public class Update {
         return this;
     }
 
-    public Update push(HashMap<String, Object> obj) {
+    public Update set(HashMap<String, Object> obj) {
         this.params.record = obj;
         return this;
     }

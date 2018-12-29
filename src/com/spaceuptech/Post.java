@@ -1,9 +1,9 @@
 package com.spaceuptech;
 
 public class Post {
-    private String title;
-    private String author;
-    private String content;
+    public String title;
+    public String author;
+    public String content;
 
     public Post(String title, String author, String content) {
         this.title = title;
@@ -12,14 +12,19 @@ public class Post {
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public String getAuthor() {
-        return this.author;
+        return author;
     }
 
     public String getContent() {
-        return this.content;
+        return content;
+    }
+
+    @Override
+    public String toString() {
+        return "title: " + title + " author: " + author + " content: " + content;
     }
 }

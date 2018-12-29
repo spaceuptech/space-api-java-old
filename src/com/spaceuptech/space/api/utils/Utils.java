@@ -1,10 +1,11 @@
 package com.spaceuptech.space.api.utils;
 
-import com.google.gson.GsonBuilder;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.spaceuptech.space.api.mongo.Mongo;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.BoundRequestBuilder;
 import org.asynchttpclient.ListenableFuture;
-import org.asynchttpclient.Response;
 
 import java.util.HashMap;
 import java.util.concurrent.Executors;
@@ -12,21 +13,41 @@ import java.util.concurrent.Executors;
 public class Utils {
 
     public interface ResponseListener {
-        public void onResponse(int statusCode, Object data);
+        public void onResponse(int statusCode, Response response);
         public void onError(Exception e);
     }
 
     public interface SQLAuthListener {
-        public void onResponse(int statusCode, AuthResponse res);
+        public void onResponse(int statusCode, SQLAuthResponse res);
+        public void onError(Exception e);
+    }
+
+    public interface SQLProfileListener {
+        public void onResponse(int statusCode, SQLUser user);
+        public void onError(Exception e);
+    }
+
+    public interface SQLProfilesListener {
+        public void onResponse(int statusCode, SQLUser[] users);
         public void onError(Exception e);
     }
 
     public interface MongoAuthListener {
-        public void onResponse(int statusCode, AuthResponse res);
+        public void onResponse(int statusCode, MongoAuthResponse res);
         public void onError(Exception e);
     }
 
-    private static ListenableFuture<Response> getFuture(AsyncHttpClient client, String method, String token, String url, String body) {
+    public interface MongoProfileListener {
+        public void onResponse(int statusCode, MongoUser user);
+        public void onError(Exception e);
+    }
+
+    public interface MongoProfilesListener {
+        public void onResponse(int statusCode, MongoUser[] users);
+        public void onError(Exception e);
+    }
+
+    private static ListenableFuture<org.asynchttpclient.Response> getFuture(AsyncHttpClient client, String method, String token, String url, String body) {
         BoundRequestBuilder builder;
 
         switch (method) {
@@ -64,15 +85,19 @@ public class Utils {
     }
 
     public static void fetch(AsyncHttpClient client, String method, String token, String url, String body, Utils.ResponseListener listener) {
-        ListenableFuture<Response> req = getFuture(client, method, token, url, body);
+        ListenableFuture<org.asynchttpclient.Response> req = getFuture(client, method, token, url, body);
 
         req.addListener(() -> {
             try {
-                Response response = req.get();
+                org.asynchttpclient.Response response = req.get();
                 String b = response.getResponseBody();
-                Object obj = null;
-                if (b.length() > 0) obj = new GsonBuilder().create().fromJson(b, Object.class);
-                listener.onResponse(response.getStatusCode(), obj);
+                JsonObject jsonObject = null;
+                if (b.length() > 0) {
+                    Gson gson = new Gson();
+                    jsonObject = gson.fromJson(b, JsonObject.class);
+                }
+                Response r = new Response(jsonObject);
+                listener.onResponse(response.getStatusCode(), r);
             } catch (Exception e) {
                 listener.onError(e);
             }

@@ -5,16 +5,17 @@ import com.spaceuptech.space.api.mongo.Mongo;
 import com.spaceuptech.space.api.sql.SQL;
 import com.spaceuptech.space.api.utils.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 
 public class Main {
 
-    private static Utils.ResponseListener generateListner(String event) {
+    private static Utils.ResponseListener generateListener(String event, Class c) {
         Utils.ResponseListener listener = new Utils.ResponseListener() {
             @Override
-            public void onResponse(int statusCode, Object data) {
-                System.out.println(event + ":: StatusCode: " + statusCode + " Data: " + data.toString());
+            public void onResponse(int statusCode, Response response) {
+                System.out.println(event + ":: StatusCode: " + statusCode + " Data: " + response.getValue(c));
             }
 
             @Override
@@ -25,15 +26,564 @@ public class Main {
         return  listener;
     }
 
-
     public static void main(String[] args) {
-        API api = new API("realtime-mysql", "http://localhost:8080");
-        SQL mySQL = api.MySQL();
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsImlkIjoiYTNjMTdkODMtMDVjMC0xMWU5LWJiYTgtMmM2MDBjYzZlNTUyIiwicm9sZSI6InVzZXIifQ.XrzX0s3kWPSTJq39BaLjNQajeOzmnozpzupwaesYAY0";
-        Utils.SQLAuthListener signUpListener = new Utils.SQLAuthListener() {
+        String name = "User 1";
+        String email = "user1@gmail.com";
+        String role = "user";
+
+        /****************************** SQL ******************************/
+//        API api = new API("realtime-mysql", "http://localhost:8080");
+//        SQL mySQL = api.MySQL();
+//        Utils.SQLAuthListener signUpListener = new Utils.SQLAuthListener() {
+//            @Override
+//            public void onResponse(int statusCode, SQLAuthResponse res) {
+//                if (statusCode != 200) {
+//                    System.out.println("Error in SignUp: " + statusCode);
+//                    return;
+//                }
+//                SQLUser user = res.user;
+//                if (!user.email.equals(email) || !user.role.equals(role)) {
+//                    System.out.println("Error in SignUp: "  +  user.email.equals(email) + user.role.equals(role));
+//                    return;
+//                }
+//                System.out.println("SignUp Successful");
+//
+//                Utils.SQLAuthListener signInListener = new Utils.SQLAuthListener() {
+//                    @Override
+//                    public void onResponse(int statusCode, SQLAuthResponse res) {
+//                        if (statusCode != 200) {
+//                            System.out.println("Error in SignIn: " + statusCode);
+//                            return;
+//                        }
+//
+//                        SQLUser user = res.user;
+//                        if (!user.email.equals(email) || !user.role.equals(role) || !user.name.equals(name)|| res.token.length() == 0) {
+//                            System.out.println("Error in SignIn");
+//                            return;
+//                        }
+//
+//                        api.setToken(res.token);
+//
+//                        Utils.ResponseListener listener = new Utils.ResponseListener() {
+//                            @Override
+//                            public void onResponse(int statusCode, Response response) {
+//                                if (statusCode != 200) {
+//                                    System.out.println("Error in inserting single post: " + statusCode);
+//                                    return;
+//                                }
+//                                System.out.println("Inserting single post successful");
+//
+//                                Post[] posts = new Post[2];
+//                                posts[0] = new Post("Post 2", "user1@gmail.com", "This is a better post");
+//                                posts[1] = new Post("Post 3", "user2@gmail.com", "This post is excellent");
+//
+//                                Utils.ResponseListener listener1 = new Utils.ResponseListener() {
+//                                    @Override
+//                                    public void onResponse(int statusCode, Response response) {
+//                                        if (statusCode != 200) {
+//                                            System.out.println("Error in inserting multiple posts: " + statusCode);
+//                                            return;
+//                                        }
+//                                        System.out.println("Inserting multiple posts successful");
+//
+//                                        Utils.ResponseListener listener2 = new Utils.ResponseListener() {
+//                                            @Override
+//                                            public void onResponse(int statusCode, Response response) {
+//                                                if (statusCode != 200) {
+//                                                    System.out.println("Error in reading single post: " + statusCode);
+//                                                    return;
+//                                                }
+//
+//                                                Post post = response.getValue(Post.class);
+//                                                if (!post.content.equals("This is a good post")) {
+//                                                    System.out.println("Error in reading single post");
+//                                                    return;
+//                                                }
+//                                                System.out.println("Get single post successful");
+//
+//                                                Utils.ResponseListener listener3 = new Utils.ResponseListener() {
+//                                                    @Override
+//                                                    public void onResponse(int statusCode, Response response) {
+//                                                        if (statusCode != 200) {
+//                                                            System.out.println("Error in reading multiple post: " + statusCode);
+//                                                            return;
+//                                                        }
+//
+//                                                        Post[] posts = response.getValue(Post[].class);
+//                                                        if (posts.length != 2) {
+//                                                            System.out.println("Error in reading multiple posts");
+//                                                            return;
+//                                                        }
+//                                                        System.out.println("Get multiple posts successful");
+//
+//                                                        Utils.ResponseListener listener4 = new Utils.ResponseListener() {
+//                                                            @Override
+//                                                            public void onResponse(int statusCode, Response response) {
+//                                                                if (statusCode != 200) {
+//                                                                    System.out.println("Error in updating single post: " + statusCode);
+//                                                                    return;
+//                                                                }
+//                                                                System.out.println("Updating single post successful");
+//
+//                                                                HashMap updates = new HashMap();
+//                                                                updates.put("content", "Each post is best in its own way");
+//
+//                                                                Utils.ResponseListener listener5 = new Utils.ResponseListener() {
+//                                                                    @Override
+//                                                                    public void onResponse(int statusCode, Response response) {
+//                                                                        if (statusCode != 200) {
+//                                                                            System.out.println("Error in updating multiple post: " + statusCode);
+//                                                                            return;
+//                                                                        }
+//                                                                        System.out.println("Updating multiple post successful");
+//
+//                                                                        Utils.ResponseListener listener6 = new Utils.ResponseListener() {
+//                                                                            @Override
+//                                                                            public void onResponse(int statusCode, Response response) {
+//                                                                                if (statusCode != 200) {
+//                                                                                    System.out.println("Error in deleting posts: " + statusCode);
+//                                                                                    return;
+//                                                                                }
+//                                                                                System.out.println("Deleting posts successful");
+//
+//                                                                                Utils.ResponseListener listener7 = new Utils.ResponseListener() {
+//                                                                                    @Override
+//                                                                                    public void onResponse(int statusCode, Response response) {
+//                                                                                        if (statusCode != 200) {
+//                                                                                            System.out.println("Error in editing profile: " + statusCode);
+//                                                                                            return;
+//                                                                                        }
+//
+//                                                                                        System.out.println("Editing profile successful");
+//
+//                                                                                        Utils.SQLProfileListener sqlProfileListener = new Utils.SQLProfileListener() {
+//                                                                                            @Override
+//                                                                                            public void onResponse(int statusCode, SQLUser user) {
+//                                                                                                if (statusCode != 200) {
+//                                                                                                    System.out.println("Error in fetching profile: " + statusCode);
+//                                                                                                    return;
+//                                                                                                }
+//
+//                                                                                                if (!user.name.equals("Jayesh")) {
+//                                                                                                    System.out.println("Error in fetching profile");
+//                                                                                                    return;
+//                                                                                                }
+//
+//                                                                                                System.out.println("Fetching profile successful");
+//
+//                                                                                                Utils.SQLProfilesListener sqlProfilesListener = new Utils.SQLProfilesListener() {
+//                                                                                                    @Override
+//                                                                                                    public void onResponse(int statusCode, SQLUser[] users) {
+//                                                                                                        if (statusCode != 200) {
+//                                                                                                            System.out.println("Error in fetching profiles: " + statusCode);
+//                                                                                                            return;
+//                                                                                                        }
+//
+//                                                                                                        if (users.length != 1 && !(users[0].name.equals("Jayesh"))) {
+//                                                                                                            System.out.println("Error in fetching profiles");
+//                                                                                                            return;
+//                                                                                                        }
+//
+//                                                                                                        System.out.println("Fetching profiles successful");
+//                                                                                                    }
+//
+//                                                                                                    @Override
+//                                                                                                    public void onError(Exception e) {
+//                                                                                                        System.out.println("Exception " + e);
+//                                                                                                    }
+//                                                                                                };
+//                                                                                                mySQL.profiles(sqlProfilesListener);
+//                                                                                            }
+//
+//                                                                                            @Override
+//                                                                                            public void onError(Exception e) {
+//                                                                                                System.out.println("Exception " + e);
+//                                                                                            }
+//                                                                                        };
+//
+//                                                                                        mySQL.profile(user.id, sqlProfileListener);
+//                                                                                    }
+//
+//                                                                                    @Override
+//                                                                                    public void onError(Exception e) {
+//                                                                                        System.out.println("Exception " + e);
+//                                                                                    }
+//                                                                                };
+//                                                                                mySQL.editProfile(user.id, user.email, "Jayesh", "123", listener7);
+//
+//                                                                            }
+//
+//                                                                            @Override
+//                                                                            public void onError(Exception e) {
+//                                                                                System.out.println("Exception " + e);
+//                                                                            }
+//                                                                        };
+//
+//                                                                        mySQL.delete("posts").where(new Cond("title", "==", "Post 1")).all(listener6);
+//                                                                    }
+//
+//                                                                    @Override
+//                                                                    public void onError(Exception e) {
+//                                                                        System.out.println("Exception " + e);
+//                                                                    }
+//                                                                };
+//
+//                                                                mySQL.update("posts").set(updates).all(listener5);
+//                                                            }
+//
+//                                                            @Override
+//                                                            public void onError(Exception e) {
+//                                                                System.out.println("Exception " + e);
+//                                                            }
+//                                                        };
+//
+//                                                        HashMap updates = new HashMap();
+//                                                        updates.put("content", "This post is best");
+//
+//                                                        mySQL.update("posts").where(new Cond("title", "==", "Post 1")).set(updates).one(listener4);
+//                                                    }
+//
+//                                                    @Override
+//                                                    public void onError(Exception e) {
+//                                                        System.out.println("Exception " + e);
+//                                                    }
+//                                                };
+//
+//                                                mySQL.get("posts").where(new Cond("author", "==", user.email)).all(listener3);
+//                                            }
+//
+//                                            @Override
+//                                            public void onError(Exception e) {
+//                                                System.out.println("Exception " + e);
+//                                            }
+//                                        };
+//
+//                                        mySQL.get("posts").where(new Cond("title", "==", "Post 1")).one(listener2);
+//                                    }
+//
+//                                    @Override
+//                                    public void onError(Exception e) {
+//                                        System.out.println("Exception " + e);
+//                                    }
+//                                };
+//
+//                                mySQL.insert("posts").all(posts, listener1);
+//                            }
+//
+//                            @Override
+//                            public void onError(Exception e) {
+//                                System.out.println("Exception " + e);
+//                            }
+//                        };
+//
+//                        mySQL.insert("posts").one(new Post("Post 1", user.email, "This is a good post"), listener);
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Exception e) {
+//                        System.out.println("SignIn  Error: " + e.toString());
+//                    }
+//                };
+//                mySQL.signIn("user1@gmail.com","123", signInListener);
+//
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//                System.out.println("Error: " + e.toString());
+//            }
+//        };
+//        mySQL.signUp("user1@gmail.com", "User 1", "123", "user", signUpListener);
+
+
+
+        /****************************** Mongo ******************************/
+        API api = new API("test", "http://localhost:8080");
+        Mongo mongo = api.Mongo();
+//        Utils.MongoAuthListener signUpListener = new Utils.MongoAuthListener() {
+//            @Override
+//            public void onResponse(int statusCode, MongoAuthResponse res) {
+//                if (statusCode != 200) {
+//                    System.out.println("Error in SignUp: " + statusCode);
+//                    return;
+//                }
+//                MongoUser user = res.user;
+//                if (!user.email.equals(email) || !user.role.equals(role)) {
+//                    System.out.println("Error in SignUp: "  +  user.email.equals(email) + user.role.equals(role));
+//                    return;
+//                }
+//                System.out.println("SignUp Successful");
+//
+//                Utils.MongoAuthListener signInListener = new Utils.MongoAuthListener() {
+//                    @Override
+//                    public void onResponse(int statusCode, MongoAuthResponse res) {
+//                        if (statusCode != 200) {
+//                            System.out.println("Error in SignIn: " + statusCode);
+//                            return;
+//                        }
+//
+//                        MongoUser user = res.user;
+//                        if (!user.email.equals(email) || !user.role.equals(role) || !user.name.equals(name)|| res.token.length() == 0) {
+//                            System.out.println("Error in SignIn");
+//                            return;
+//                        }
+//
+//                        api.setToken(res.token);
+//
+//                        Utils.ResponseListener listener = new Utils.ResponseListener() {
+//                            @Override
+//                            public void onResponse(int statusCode, Response response) {
+//                                if (statusCode != 200) {
+//                                    System.out.println("Error in inserting single post: " + statusCode);
+//                                    return;
+//                                }
+//                                System.out.println("Inserting single post successful");
+//
+//                                Post[] posts = new Post[2];
+//                                posts[0] = new Post("Post 2", "user1@gmail.com", "This is a better post");
+//                                posts[1] = new Post("Post 3", "user2@gmail.com", "This post is excellent");
+//
+//                                Utils.ResponseListener listener1 = new Utils.ResponseListener() {
+//                                    @Override
+//                                    public void onResponse(int statusCode, Response response) {
+//                                        if (statusCode != 200) {
+//                                            System.out.println("Error in inserting multiple posts: " + statusCode);
+//                                            return;
+//                                        }
+//                                        System.out.println("Inserting multiple posts successful");
+//
+//                                        Utils.ResponseListener listener2 = new Utils.ResponseListener() {
+//                                            @Override
+//                                            public void onResponse(int statusCode, Response response) {
+//                                                if (statusCode != 200) {
+//                                                    System.out.println("Error in reading single post: " + statusCode);
+//                                                    return;
+//                                                }
+//
+//                                                Post post = response.getValue(Post.class);
+//                                                if (!post.content.equals("This is a good post")) {
+//                                                    System.out.println("Error in reading single post");
+//                                                    return;
+//                                                }
+//                                                System.out.println("Get single post successful");
+//
+//                                                Utils.ResponseListener listener3 = new Utils.ResponseListener() {
+//                                                    @Override
+//                                                    public void onResponse(int statusCode, Response response) {
+//                                                        if (statusCode != 200) {
+//                                                            System.out.println("Error in reading multiple post: " + statusCode);
+//                                                            return;
+//                                                        }
+//
+//                                                        Post[] posts = response.getValue(Post[].class);
+//                                                        if (posts.length != 2) {
+//                                                            System.out.println("Error in reading multiple posts");
+//                                                            return;
+//                                                        }
+//                                                        System.out.println("Get multiple posts successful");
+//
+//                                                        Utils.ResponseListener listener4 = new Utils.ResponseListener() {
+//                                                            @Override
+//                                                            public void onResponse(int statusCode, Response response) {
+//                                                                if (statusCode != 200) {
+//                                                                    System.out.println("Error in updating single post: " + statusCode);
+//                                                                    return;
+//                                                                }
+//                                                                System.out.println("Updating single post successful");
+//
+//                                                                HashMap updates = new HashMap();
+//                                                                updates.put("content", "Each post is best in its own way");
+//
+//                                                                Utils.ResponseListener listener5 = new Utils.ResponseListener() {
+//                                                                    @Override
+//                                                                    public void onResponse(int statusCode, Response response) {
+//                                                                        if (statusCode != 200) {
+//                                                                            System.out.println("Error in updating multiple post: " + statusCode);
+//                                                                            return;
+//                                                                        }
+//                                                                        System.out.println("Updating multiple post successful");
+//
+//                                                                        Utils.ResponseListener listener6 = new Utils.ResponseListener() {
+//                                                                            @Override
+//                                                                            public void onResponse(int statusCode, Response response) {
+//                                                                                if (statusCode != 200) {
+//                                                                                    System.out.println("Error in deleting posts: " + statusCode);
+//                                                                                    return;
+//                                                                                }
+//                                                                                System.out.println("Deleting posts successful");
+//
+//                                                                                Utils.ResponseListener listener7 = new Utils.ResponseListener() {
+//                                                                                    @Override
+//                                                                                    public void onResponse(int statusCode, Response response) {
+//                                                                                        if (statusCode != 200) {
+//                                                                                            System.out.println("Error in editing profile: " + statusCode);
+//                                                                                            return;
+//                                                                                        }
+//
+//                                                                                        System.out.println("Editing profile successful");
+//
+//                                                                                        Utils.MongoProfileListener mongoProfileListener = new Utils.MongoProfileListener() {
+//                                                                                            @Override
+//                                                                                            public void onResponse(int statusCode, MongoUser user) {
+//                                                                                                if (statusCode != 200) {
+//                                                                                                    System.out.println("Error in fetching profile: " + statusCode);
+//                                                                                                    return;
+//                                                                                                }
+//
+//                                                                                                if (!user.name.equals("Jayesh")) {
+//                                                                                                    System.out.println("Error in fetching profile");
+//                                                                                                    return;
+//                                                                                                }
+//
+//                                                                                                System.out.println("Fetching profile successful");
+//
+//                                                                                                Utils.MongoProfilesListener mongoProfilesListener = new Utils.MongoProfilesListener() {
+//                                                                                                    @Override
+//                                                                                                    public void onResponse(int statusCode, MongoUser[] users) {
+//                                                                                                        if (statusCode != 200) {
+//                                                                                                            System.out.println("Error in fetching profiles: " + statusCode);
+//                                                                                                            return;
+//                                                                                                        }
+//
+//                                                                                                        if (users.length != 1 && !(users[0].name.equals("Jayesh"))) {
+//                                                                                                            System.out.println("Error in fetching profiles");
+//                                                                                                            return;
+//                                                                                                        }
+//
+//                                                                                                        System.out.println("Fetching profiles successful");
+//                                                                                                    }
+//
+//                                                                                                    @Override
+//                                                                                                    public void onError(Exception e) {
+//                                                                                                        System.out.println("Exception " + e);
+//                                                                                                    }
+//                                                                                                };
+//                                                                                                mongo.profiles(mongoProfilesListener);
+//                                                                                            }
+//
+//                                                                                            @Override
+//                                                                                            public void onError(Exception e) {
+//                                                                                                System.out.println("Exception " + e);
+//                                                                                            }
+//                                                                                        };
+//
+//                                                                                        mongo.profile(user._id, mongoProfileListener);
+//                                                                                    }
+//
+//                                                                                    @Override
+//                                                                                    public void onError(Exception e) {
+//                                                                                        System.out.println("Exception " + e);
+//                                                                                    }
+//                                                                                };
+//                                                                                mongo.editProfile(user._id, user.email, "Jayesh", "123", listener7);
+//
+//                                                                            }
+//
+//                                                                            @Override
+//                                                                            public void onError(Exception e) {
+//                                                                                System.out.println("Exception " + e);
+//                                                                            }
+//                                                                        };
+//
+//                                                                        mongo.delete("posts").where(new Cond("title", "==", "Post 1")).all(listener6);
+//                                                                    }
+//
+//                                                                    @Override
+//                                                                    public void onError(Exception e) {
+//                                                                        System.out.println("Exception " + e);
+//                                                                    }
+//                                                                };
+//
+//                                                                mongo.update("posts").where().set(updates).all(listener5);
+//                                                            }
+//
+//                                                            @Override
+//                                                            public void onError(Exception e) {
+//                                                                System.out.println("Exception " + e);
+//                                                            }
+//                                                        };
+//
+//                                                        HashMap updates = new HashMap();
+//                                                        updates.put("content", "This post is best");
+//
+//                                                        mongo.update("posts").where(new Cond("title", "==", "Post 1")).set(updates).one(listener4);
+//                                                    }
+//
+//                                                    @Override
+//                                                    public void onError(Exception e) {
+//                                                        System.out.println("Exception " + e);
+//                                                    }
+//                                                };
+//
+//                                                mongo.get("posts").where(new Cond("author", "==", user.email)).all(listener3);
+//                                            }
+//
+//                                            @Override
+//                                            public void onError(Exception e) {
+//                                                System.out.println("Exception " + e);
+//                                            }
+//                                        };
+//
+//                                        mongo.get("posts").where(new Cond("title", "==", "Post 1")).one(listener2);
+//                                    }
+//
+//                                    @Override
+//                                    public void onError(Exception e) {
+//                                        System.out.println("Exception " + e);
+//                                    }
+//                                };
+//
+//                                mongo.insert("posts").all(posts, listener1);
+//                            }
+//
+//                            @Override
+//                            public void onError(Exception e) {
+//                                System.out.println("Exception " + e);
+//                            }
+//                        };
+//
+//                        mongo.insert("posts").one(new Post("Post 1", user.email, "This is a good post"), listener);
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Exception e) {
+//                        System.out.println("SignIn  Error: " + e.toString());
+//                    }
+//                };
+//                mongo.signIn("user1@gmail.com","123", signInListener);
+//
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//                System.out.println("Error: " + e.toString());
+//            }
+//        };
+//        mongo.signUp("user1@gmail.com", "User 1", "123", "user", signUpListener);
+
+        Utils.MongoAuthListener mongoAuthListener = new Utils.MongoAuthListener() {
             @Override
-            public void onResponse(int statusCode, AuthResponse res) {
-                System.out.println("SignUp Response: " + res.toString());
+            public void onResponse(int statusCode, MongoAuthResponse res) {
+                if (statusCode != 200) {
+                    System.out.println("Error in Signin: " + statusCode);
+                    return;
+                }
+                api.setToken(res.token);
+
+                Utils.ResponseListener responseListener = new Utils.ResponseListener() {
+                    @Override
+                    public void onResponse(int statusCode, Response response) {
+                        System.out.println("FaaS Response: " + response.getValue(Object.class));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        System.out.println("Error: " + e.toString());
+                    }
+                };
+                api.call("echo-engine", "echo", 5000, "FaaS is awesome!", responseListener);
             }
 
             @Override
@@ -41,77 +591,7 @@ public class Main {
                 System.out.println("Error: " + e.toString());
             }
         };
-        mySQL.signUp("user1@gmail.com", "User 1", "123", "user", signUpListener);
-
-//        Utils.ResponseListener signInListener = new Utils.ResponseListener() {
-//            @Override
-//            public void onResponse(int statusCode, Object data) {
-//                System.out.println("SignIn StatusCode: " + statusCode + " Data: " + data.toString());
-//            }
-//
-//            @Override
-//            public void onError(Exception e) {
-//                System.out.println("SignIn  Error: " + e.toString());
-//            }
-//        };
-//        mongo.signIn("user1@gmail.com","123", generateListner("Signin"));
-
-//        api.setToken(token);
-
-
-//        Utils.ResponseListener insertOneListener = new Utils.ResponseListener() {
-//            @Override
-//            public void onResponse(int statusCode, Object data) {
-//                System.out.println("Insert StatusCode: " + statusCode + " Data: " + data.toString());
-//            }
-//
-//            @Override
-//            public void onError(Exception e) {
-//                System.out.println("Insert  Error: " + e.toString());
-//            }
-//        };
-//
-//        mongo.insert("posts").one(new Post("Post 1", "user1@gmail.com", "This is a good post"), insertOneListener);
-//
-//        Utils.ResponseListener insertManyListener = new Utils.ResponseListener() {
-//            @Override
-//            public void onResponse(int statusCode, Object data) {
-//                System.out.println("Insert Many StatusCode: " + statusCode + " Data: " + data.toString());
-//            }
-//
-//            @Override
-//            public void onError(Exception e) {
-//                System.out.println("Insert Many Error: " + e.toString());
-//            }
-//        };
-//
-//        Post[] posts = new Post[2];
-//        posts[0] = new Post("Post 2", "user1@gmail.com", "This is a better post");
-//        posts[1] = new Post("Post 3", "user2@gmail.com", "This post is excellent");
-//        mongo.insert("posts").all(posts, insertManyListener);
-
-//        mongo.get("posts").count(generateListner("Get Count"));
-//        mongo.get("posts").one(generateListner("Get One"));
-//        mongo.get("posts").all(generateListner("Get All"));
-//        Or and = Or.create(Cond.create("author", "==", "user1@gmail.com"), Cond.create("title", "==", "Post 3"));
-//        mongo.get("posts").where(and).all(generateListner("Get All Where"));
-//        mongo.get("posts").where(new Cond("author", "==", "user1@gmail.com")).limit(1).all(generateListner("Get All Limit"));
-//        mongo.get("posts").sort("title").all(generateListner("Get All Sort"));
-//        HashMap select = new HashMap<String, Integer>();
-//        select.put("_id", 0);
-//        mongo.get("posts").skip(1).limit(1).select(select).all(generateListner("Get Skip"));
-//        mongo.get("posts").distinct("author", generateListner("Get Distinct"));
-//        HashMap map = new HashMap<String, Object>();
-//        map.put("content", "This post is best");
-//        mongo.update("posts")
-//                .where(new Cond("title", "==", "Post 3"))
-//                .set(map).one(generateListner("Update All"));
-//        mongo.profile("a3c17d83-05c0-11e9-bba8-2c600cc6e552",generateListner("Profile"));
-//
-//        mongo.profiles(generateListner("Profile"));
-//        mongo.editProfile("a3c17d83-05c0-11e9-bba8-2c600cc6e552", "user1@gmail.com", "Jayesh", "123", generateListner("Edit Profile"));
-
-//        api.call("my-engine", "my-func", 5000, "Faas is awesome!", generateListner("FaaS"));
+        mongo.signIn("user1@gmail.com", "123", mongoAuthListener);
 
     }
 }

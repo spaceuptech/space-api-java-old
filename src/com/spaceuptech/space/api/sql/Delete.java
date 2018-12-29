@@ -31,6 +31,7 @@ public class Delete {
         return this;
     }
 
+
     public void all(Utils.ResponseListener listener) {
         Utils.fetch(this.config.client,"delete", this.config.token,
                 SQL.sqlURL(this.config.url, this.db, this.config.projectId, this.table, ""),

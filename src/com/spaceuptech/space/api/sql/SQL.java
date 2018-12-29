@@ -1,9 +1,8 @@
 package com.spaceuptech.space.api.sql;
 
 import com.google.gson.Gson;
-import com.spaceuptech.space.api.utils.AuthResponse;
-import com.spaceuptech.space.api.utils.Config;
-import com.spaceuptech.space.api.utils.Utils;
+import com.google.gson.JsonElement;
+import com.spaceuptech.space.api.utils.*;
 
 import java.util.HashMap;
 
@@ -34,9 +33,25 @@ public class SQL {
         return new Delete(this.db, this.config, collection);
     }
 
-    public void profile(String id, Utils.ResponseListener listener) {
+    public void profile(String id, Utils.SQLProfileListener listener) {
+
+        Utils.ResponseListener listener1 = new Utils.ResponseListener() {
+            @Override
+            public void onResponse(int statusCode, Response response) {
+                Gson gson = new Gson();
+                JsonElement userJsonElement = response.jsonObject.get("user");
+                SQLUser sqlUser = gson.fromJson(userJsonElement, SQLUser.class);
+                listener.onResponse(statusCode, sqlUser);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                listener.onError(e);
+            }
+        };
+
         Utils.fetch(this.config.client, "get", this.config.token,
-                this.config.url + "v1/auth/" + this.db + "/profile/" + id, "", listener);
+                this.config.url + "v1/auth/" + this.db + "/profile/" + id, "", listener1);
     }
 
     public void editProfile(String id, String email, String name, String pass, Utils.ResponseListener listener) {
@@ -50,9 +65,25 @@ public class SQL {
                 new Gson().toJson(createMap("record", map)), listener);
     }
 
-    public void profiles(Utils.ResponseListener listener) {
+    public void profiles(Utils.SQLProfilesListener listener) {
+
+        Utils.ResponseListener listener1 = new Utils.ResponseListener() {
+            @Override
+            public void onResponse(int statusCode, Response response) {
+                Gson gson = new Gson();
+                JsonElement userJsonElement = response.jsonObject.get("users");
+                SQLUser[] sqlUsers = gson.fromJson(userJsonElement, SQLUser[].class);
+                listener.onResponse(statusCode, sqlUsers);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                listener.onError(e);
+            }
+        };
+
         Utils.fetch(this.config.client, "get", this.config.token,
-                this.config.url + "v1/auth/" + this.db + "/profiles", "", listener);
+                this.config.url + "v1/auth/" + this.db + "/profiles", "", listener1);
     }
 
     public void signIn(String email, String pass, Utils.SQLAuthListener listener) {
@@ -63,8 +94,10 @@ public class SQL {
 
         Utils.ResponseListener listener1 = new Utils.ResponseListener() {
             @Override
-            public void onResponse(int statusCode, Object data) {
-                listener.onResponse(statusCode, (AuthResponse) data);
+            public void onResponse(int statusCode, Response response) {
+                Gson gson = new Gson();
+                SQLAuthResponse sqlAuthResponse = gson.fromJson(response.jsonObject, SQLAuthResponse.class);
+                listener.onResponse(statusCode, sqlAuthResponse);
             }
 
             @Override
@@ -87,9 +120,10 @@ public class SQL {
 
         Utils.ResponseListener listener1 = new Utils.ResponseListener() {
             @Override
-            public void onResponse(int statusCode, Object data) {
-                AuthResponse res = AuthResponse.class.cast(data);
-                listener.onResponse(statusCode, res);
+            public void onResponse(int statusCode, Response response) {
+                Gson gson = new Gson();
+                SQLAuthResponse sqlAuthResponse = gson.fromJson(response.jsonObject, SQLAuthResponse.class);
+                listener.onResponse(statusCode, sqlAuthResponse);
             }
 
             @Override
