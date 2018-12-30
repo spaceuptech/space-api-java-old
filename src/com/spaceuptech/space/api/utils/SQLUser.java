@@ -1,11 +1,20 @@
 package com.spaceuptech.space.api.utils;
 
+/**
+ * Class representing user object for SQL Databases
+ */
 public class SQLUser {
     public String id;
     public String email;
     public  String name;
     public  String role;
 
+    /**
+     * @param id unique id of user.
+     * @param email email of user.
+     * @param name name of the user.
+     * @param role role of the user.
+     */
     public SQLUser(String id, String email, String name, String role) {
         this.id = id;
         this.email = email;

@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+/**
+ * Class representing response object.
+ */
 public class Response {
     public JsonObject jsonObject;
 
@@ -11,6 +14,14 @@ public class Response {
         this.jsonObject = jsonObject;
     }
 
+    /**
+     * This method converts the response into an object of the specified type.
+     * @param c Class in which to cast the response object.
+     * @return An object of the specified type.
+     * <pre>
+     * Post post = res.getValue(Post.class);
+     * </pre>
+     */
     public <T> T getValue(Class<T> c) {
         Gson gson = new Gson();
         JsonElement result = jsonObject.get("result");

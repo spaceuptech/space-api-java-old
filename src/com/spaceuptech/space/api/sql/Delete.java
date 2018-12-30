@@ -9,6 +9,35 @@ import com.spaceuptech.space.api.utils.Utils;
 
 import java.util.HashMap;
 
+/**
+ * Class representing the SQL Delete interface.
+ * <pre>
+ * API api = new API("test", "http://localhost:8080");
+ *
+ * // For MySQL
+ * SQL db = api.MySQL();
+ *
+ * // For Postgres
+ * SQL db = api.Postgres();
+ *
+ * Utils.ResponseListener responseListener = new Utils.ResponseListener() {
+ *     {@code @Override}
+ *     public void onResponse(int statusCode, Response response) {
+ *         if (statusCode != 200) {
+ *             System.out.println("Error: " + statusCode);
+ *             return;
+ *         }
+ *      }
+ *
+ *     {@code @Override}
+ *     public void onError(Exception e) {
+ *         System.out.println("Exception: " + e);
+ *     }
+ * };
+ *
+ * db.delete("posts").where(new Cond("title", "==", "Post 1")).all(responseListener);
+ * </pre>
+ */
 public class Delete {
     private class Params {
         HashMap<String, Object> find;
@@ -18,6 +47,11 @@ public class Delete {
     private String db, table;
     private Params params;
 
+    /**
+     * @param db name of database.
+     * @param config config object.
+     * @param table name of table.
+     */
     public Delete(String db, Config config, String table) {
         this.db = db;
         this.config = config;
@@ -25,6 +59,11 @@ public class Delete {
         this.params = new Params();
     }
 
+    /**
+     * Prepares the find query.
+     * @param conds The logic for where clause.
+     * @return
+     */
     public Delete where(Condition... conds) {
         if (conds.length == 1) this.params.find = Mongo.generateFind(conds[0]);
         else this.params.find = Mongo.generateFind(And.create(conds));
@@ -32,6 +71,13 @@ public class Delete {
     }
 
 
+    /**
+     * Makes the query to delete all the records which match.
+     * @param listener Listener to listen to the response of delete query.
+     * <pre>
+     * db.delete("posts").where(whereClause).all(listener)
+     * </pre>
+     */
     public void all(Utils.ResponseListener listener) {
         Utils.fetch(this.config.client,"delete", this.config.token,
                 SQL.sqlURL(this.config.url, this.db, this.config.projectId, this.table, ""),
